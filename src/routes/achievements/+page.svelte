@@ -10,6 +10,7 @@ onMount(() => {
 let modal;
 let syncModal;
 let password = $state(null);
+let syncing = $state(false);
 
 function handleClick(color) {
   if(!browser) return;
@@ -37,6 +38,12 @@ function getLastWeekTotals() {
   return last7.map(d => ({ date: d, count: data[d] }))
 }
 
+async function syncFunc() {
+  syncing = true;
+  await sync(password);
+  syncing = false;
+}
+
 </script>
 
 <dialog bind:this={modal} class="modal">
@@ -58,11 +65,11 @@ function getLastWeekTotals() {
     <p class="py-4">Please enter the password to sync data.</p>
     <input bind:value={password} placeholder="password" class="input my-4 rounded-3xl input-accent" type="text">
     <div class="modal-action">
-      <button class="btn btn-primary rounded-3xl" onclick={() => {sync(password)}} >
+      <button disabled={syncing} type="button" class="btn btn-primary rounded-3xl" onclick={syncFunc} >
         <span class="material-symbols-outlined">
           sync
         </span>
-        Sync</button>
+        {syncing ? 'Syncing' : 'sync'}</button>
       <button onclick={() => pullFromServer(password)} class="btn rounded-3xl btn-outline">
         <span class="material-symbols-outlined">
           sync_arrow_down
