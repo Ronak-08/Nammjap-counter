@@ -1,16 +1,14 @@
-import { JSONBIN_MASTER_KEY, JSONBIN_BIN_ID, SYNC_PASSWORD } from "$env/static/private";
+export async function POST({ cookies }) {
+  const apiKey = cookies.get("jsonbin_key");
+  const binId = cookies.get("jsonbin_bin");
 
-export async function POST({ request }) {
+  if(!apiKey || !binId) { return new Response("missing", {status: 400}); }
   const body = await request.json();
-  const pass = await request.headers.get("X-sync-password");
-  if (pass !== SYNC_PASSWORD) {
-    return new Response("forbidden", { status: 403 });
-  }
-  await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+  await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "X-Master-Key": JSONBIN_MASTER_KEY
+      "X-Master-Key": apiKey
     },
     body: JSON.stringify(body)
   });

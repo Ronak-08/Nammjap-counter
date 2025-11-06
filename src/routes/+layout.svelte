@@ -11,6 +11,11 @@ const isActive = (path) => {
   return page.url.pathname === path ? "dock-active" : "none";
 }
 onMount(() => {
+  if ('serviceWorker' in navigator) {
+    addEventListener('load', function () {
+      navigator.serviceWorker.register('/service-worker.js');
+    });
+  }
   restore();
 })
 </script>

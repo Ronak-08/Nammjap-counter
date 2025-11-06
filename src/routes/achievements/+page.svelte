@@ -9,8 +9,21 @@ onMount(() => {
 })
 let modal;
 let syncModal;
-let password = $state(null);
 let syncing = $state(false);
+let apiKey = $state("");
+let binId = $state("");
+
+onMount(() => {
+  apiKey = document.cookie
+    .split("; ")
+    .find(row => row.startsWith("jsonbin_key="))
+    ?.split("=")[1] ?? "";
+
+  binId = document.cookie
+    .split("; ")
+    .find(row => row.startsWith("jsonbin_bin="))
+    ?.split("=")[1] ?? "";
+});
 
 function handleClick(color) {
   if(!browser) return;
@@ -40,8 +53,13 @@ function getLastWeekTotals() {
 
 async function syncFunc() {
   syncing = true;
-  await sync(password);
+  await sync();
   syncing = false;
+}
+
+function saveCreds() {
+  document.cookie = `jsonbin_key=${apiKey}; path=/; max-age=31536000`;
+  document.cookie = `jsonbin_bin=${binId}; path=/; max-age=31536000`;
 }
 
 </script>
@@ -61,24 +79,31 @@ async function syncFunc() {
 
 <dialog bind:this={syncModal} class="modal">
   <div class="modal-box">
-    <h3 class="text-2xl font-bold">Enter Password</h3>
-    <p class="py-4">Please enter the password to sync data.</p>
-    <input bind:value={password} placeholder="password" class="input my-4 rounded-3xl input-accent" type="text">
-    <div class="modal-action">
-      <button disabled={syncing} type="button" class="btn btn-primary rounded-3xl" onclick={syncFunc} >
-        <span class="material-symbols-outlined">
-          sync
-        </span>
-        {syncing ? 'Syncing' : 'sync'}</button>
-      <button onclick={() => pullFromServer(password)} class="btn rounded-3xl btn-outline">
-        <span class="material-symbols-outlined">
-          sync_arrow_down
-        </span>
-        Pull
-      </button>
-    </div>
+    <h3 class="text-lg font-bold">Enter BIN + API</h3>
+    <p class="py-4">Go to <a class="text-secondary" href="https://jsonbin.io">jsonbin</a> and copy your api and binId</p>
+    <input
+      bind:value={apiKey}
+      placeholder="API Key"
+      class="input my-3 rounded-3xl input-accent"
+    />
+
+    <input
+      bind:value={binId}
+      placeholder="BIN ID"
+      class="input my-3 rounded-3xl input-accent"
+    />
+
+  <div class="modal-action ml-auto">
+    <button
+      type="button"
+      class="btn btn-primary rounded-3xl"
+      onclick={saveCreds}
+    >
+      Save
+    </button>
   </div>
-  <form  method="dialog" class="modal-backdrop">
+  </div>
+  <form method="dialog" class="modal-backdrop">
     <button>close</button>
   </form>
 </dialog>
@@ -89,11 +114,22 @@ async function syncFunc() {
       <p class="btn btn-ghost text-xl">Stats</p>
     </div>
     <div class="flex gap-2">
-  <button onclick={() => syncModal.showModal()} class="btn btn-accent ">
-    <span class="material-symbols-outlined">
-      sync
-    </span>
-  </button>
+      {#if !apiKey || !binId}
+        <button onclick={() => syncModal.showModal()} class="btn btn-accent ">
+          <span class="material-symbols-outlined">
+            sync
+          </span>
+        </button>
+      {:else} 
+        <button onclick={syncFunc} disabled={syncing} class="btn btn-accent ">
+          <span class="material-symbols-outlined">
+            sync
+          </span>
+          {syncing ? 'Syncing' : 'Sync'}
+        </button>
+        <button class="btn btn-neutral" onclick={pullFromServer}>pull</button>
+
+      {/if}
       <button onclick={() => modal.showModal() } class="btn btn-square btn-error">
         <span class="material-symbols-outlined">
           delete_forever

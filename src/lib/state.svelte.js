@@ -14,24 +14,18 @@ export function saveData() {
   localStorage.setItem("data", JSON.stringify(data))
 }
 
-export async function sync(pass) {
+export async function sync() {
   await fetch("/api/sync", {
     method: "POST",
-    headers: {
-      "X-sync-password": pass
-    },
-    body: JSON.stringify(data) 
+    body: JSON.stringify(data)
   })
 }
 
-export async function pullFromServer(pass) {
-  const r = await fetch("/api/sync/pull", {
-    headers: { "X-sync-password": pass }
-  });
+export async function pullFromServer() {
+  const r = await fetch("/api/sync/pull");
   if (!r.ok) return;
 
   const serverData = await r.json();
   Object.assign(data, serverData);
-  saveData()
+  saveData();
 }
-
