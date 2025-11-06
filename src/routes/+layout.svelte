@@ -2,7 +2,6 @@
 import '../app.css';
 import favicon from '$lib/assets/favicon.svg';
 import { page } from '$app/state';
-import { fade } from 'svelte/transition';
 import { onMount } from 'svelte';
 import { restore } from '$lib/state.svelte';
 
@@ -12,12 +11,17 @@ const isActive = (path) => {
 }
 onMount(() => {
   if ('serviceWorker' in navigator) {
-    addEventListener('load', function () {
-      navigator.serviceWorker.register('/service-worker.js');
-    });
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => {
+        console.log('Service worker registered!', reg);
+      })
+      .catch(err => {
+        console.error('Service worker registration failed:', err);
+      });
   }
   restore();
-})
+});
+
 </script>
 
 <svelte:head>
