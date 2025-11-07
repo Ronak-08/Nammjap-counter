@@ -71,7 +71,7 @@ function tag() {
 
 function finalizeYesterday(day,count) {
   const d = JSON.parse(localStorage.getItem("daily") ?? "{}");
-  const hasAnyHistory = Object.keys(daily).length > 0;
+  const hasAnyHistory = Object.keys(d).length > 0;
 
   if(!hasAnyHistory) return;
   d[day] = count;

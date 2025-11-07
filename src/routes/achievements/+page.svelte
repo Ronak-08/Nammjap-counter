@@ -84,13 +84,13 @@ function saveCreds() {
     <input
       bind:value={apiKey}
       placeholder="API Key"
-      class="input my-3 rounded-3xl input-accent"
+      class="input my-3 w-full rounded-3xl input-accent"
     />
 
     <input
       bind:value={binId}
       placeholder="BIN ID"
-      class="input my-3 rounded-3xl input-accent"
+      class="input my-3 w-full rounded-3xl input-accent"
     />
 
   <div class="modal-action ml-auto">
