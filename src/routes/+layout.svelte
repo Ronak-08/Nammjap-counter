@@ -10,15 +10,6 @@ const isActive = (path) => {
   return page.url.pathname === path ? "dock-active" : "none";
 }
 onMount(() => {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => {
-        console.log('Service worker registered!', reg);
-      })
-      .catch(err => {
-        console.error('Service worker registration failed:', err);
-      });
-  }
   restore();
 });
 

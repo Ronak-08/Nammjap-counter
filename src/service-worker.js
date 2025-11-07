@@ -28,23 +28,27 @@ self.addEventListener('fetch', (event) => {
     (async () => {
       const url = new URL(event.request.url);
       const cache = await caches.open(CACHE);
+
       if (ASSETS.includes(url.pathname)) {
         const cached = await cache.match(url.pathname);
         if (cached) return cached;
       }
+
       try {
         const response = await fetch(event.request);
-
-        if (response.status === 200) {
-          cache.put(event.request, response.clone());
+        if (response.status === 200 && response.type === 'basic') {
+          try {
+            await cache.put(event.request, response.clone());
+          } catch (err) {
+            console.warn('Caching failed:', err);
+          }
         }
-
         return response;
       } catch (e) {
         const cached = await cache.match(event.request);
         if (cached) return cached;
         throw e;
       }
-    })
+    })()
   );
 });
