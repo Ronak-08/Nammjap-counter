@@ -23,12 +23,6 @@ onMount(() => {
     ?.split("=")[1] ?? "";
 });
 
-function handleClick(color) {
-  if(!browser) return;
-  data.setColor = color;
-  saveData();
-}
-
 function clearData() {
   if(!browser) return;
   data.count = 0;
@@ -58,7 +52,7 @@ async function syncFunc() {
 function saveCreds() {
   document.cookie = `jsonbin_key=${apiKey}; path=/; max-age=31536000`;
   document.cookie = `jsonbin_bin=${binId}; path=/; max-age=31536000`;
-  syncModal.closeModal();
+  syncModal.close();
 }
 
 </script>
@@ -160,7 +154,7 @@ function saveCreds() {
 </div>
  <div class="divider"></div>
   <Modal {show}/>
-  <button onclick={() => show = !show} class="absolute right-4 bottom-[10vh] btn btn-primary h-[50px] w-[50px]">
+  <button onclick={() => show = !show} class="absolute right-4 bottom-[90px] btn btn-primary h-[50px] w-[50px]">
     <span class="material-symbols-outlined">
       trophy
     </span>

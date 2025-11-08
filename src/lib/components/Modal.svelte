@@ -2,13 +2,20 @@
 import { achievements, updateAchievements } from "$lib/achievements.svelte.js";
 import { onMount } from "svelte";
 import { browser } from "$app/environment";
-import { data } from "$lib/state.svelte";
+import { data, saveData } from "$lib/state.svelte";
 import { fade } from "svelte/transition";
 
 let {show = false} = $props();
 onMount(() => {
   updateAchievements(data.count);
 })
+
+function handleClick(color) {
+  if(!browser) return;
+  data.setColor = color;
+  saveData();
+}
+
 </script>
 
 {#if show}
