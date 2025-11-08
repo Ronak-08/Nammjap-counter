@@ -31,10 +31,10 @@ function save(evt) {
       showToast = true;
       setTimeout(() => {
         showToast = false; 
-      }, 2000);
+      }, 3000);
       localStorage.setItem("goalShown", today);
     }
-  },300);
+  },500);
 }
 
 $effect(() => {
@@ -49,9 +49,9 @@ function colorClass() {
   const diff = data.dailyCount - data.dailyGoal;
   const stage = Math.floor(diff / 1000);
 
-  if (stage < 1) return "text-primary";
-  if (stage < 3) return "text-secondary";
-  if (stage < 5) return "text-accent";
+  if (stage < 1) return "text-yellow-300";
+  if (stage < 3) return "text-yellow-500";
+  if (stage < 5) return "text-green-300";
   if (stage < 7) return "text-purple-500";
   if (stage < 9) return "text-purple-700";
 
@@ -126,8 +126,8 @@ $effect(() => {
 
   <h1 class={`text-[10rem] md:text-[13rem] z-0 ${textColor()} my-6`} >राधा</h1>
 
-  <div class="radial-progress" style="--value:{percent()}; --size:12rem; --thickness: 9px;" aria-valuenow={percent()} role="progressbar">
-    <p class={`p-1 px-3 bg-secondary rounded-2xl font-bold text-xl ${colorClass()}`}>{data.dailyCount}</p>
+  <div class={`radial-progress ${colorClass()}`} style="--value:{percent()}; --size:12rem; --thickness: 9px;" aria-valuenow={percent()} role="progressbar">
+    <p class={`p-1 px-3 bg-secondary text-shadow-sm rounded-2xl font-bold text-xl ${colorClass()}`}>{data.dailyCount}</p>
   </div>
 
   {#if showToast}

@@ -6,6 +6,7 @@ import { data, saveData } from "$lib/state.svelte";
 import { fade } from "svelte/transition";
 
 let {show = false} = $props();
+
 onMount(() => {
   updateAchievements(data.count);
 })
@@ -37,9 +38,10 @@ function handleClick(color) {
     {#if achievements.filter(a => a.completed).length === 0}
       <p class="text-center m-3 mt-8 opacity-80">No achievement unlocked</p>
     {:else}
+      <div class="m-4 p-4">
       {#each achievements as a (a.id)}
         {#if a.completed}
-          <div class="card w-auto bg-base-100 card-md shadow-sm">
+          <div class="card m-2 w-auto bg-base-200 card-md shadow-sm">
             <div class="card-body flex flex-row">
               <p>{a.text}</p>
               <input
@@ -51,6 +53,7 @@ function handleClick(color) {
           </div>
         {/if}
       {/each}
+  </div>
     {/if}
   </main>
 {/if}
