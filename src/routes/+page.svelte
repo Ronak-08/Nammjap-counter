@@ -37,6 +37,12 @@ function save(evt) {
   },300);
 }
 
+$effect(() => {
+ if(data.count > 0 && data.count % 1000 === 0) {
+    sync();
+  }
+})
+
 function colorClass() {
   if (data.dailyCount < data.dailyGoal) return "text-secondary-content";
 

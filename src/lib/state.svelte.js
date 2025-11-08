@@ -15,10 +15,11 @@ export function saveData() {
 }
 
 export async function sync() {
+  const { dailyCount, ...dataToSync } = data; 
   await fetch("/api/sync", {
     method: "POST",
-    body: JSON.stringify(data)
-  })
+    body: JSON.stringify(dataToSync)
+  });
 }
 
 export async function pullFromServer() {

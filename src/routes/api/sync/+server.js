@@ -1,4 +1,4 @@
-export async function POST({ cookies }) {
+export async function POST({ cookies,request }) {
   const apiKey = cookies.get("jsonbin_key");
   const binId = cookies.get("jsonbin_bin");
 

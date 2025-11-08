@@ -1,13 +1,11 @@
 <script>
 import { onMount } from "svelte";
-import { achievements, updateAchievements } from "$lib/achievements.svelte.js";
 import { browser } from "$app/environment";
 import { data, saveData,sync,pullFromServer } from "$lib/state.svelte";
+import Modal from '$lib/components/Modal.svelte';
 
-onMount(() => {
-  updateAchievements(data.count);
-})
 let modal;
+let show = $state(false);
 let syncModal;
 let syncing = $state(false);
 let apiKey = $state("");
@@ -60,6 +58,7 @@ async function syncFunc() {
 function saveCreds() {
   document.cookie = `jsonbin_key=${apiKey}; path=/; max-age=31536000`;
   document.cookie = `jsonbin_bin=${binId}; path=/; max-age=31536000`;
+  syncModal.closeModal();
 }
 
 </script>
@@ -160,25 +159,11 @@ function saveCreds() {
   <progress class="progress progress-primary m-6 w-[80vw]" value={data.count} max={1000000}></progress>
 </div>
  <div class="divider"></div>
-  <div class="wrap flex flex-col h-fit mb-6 gap-2 p-6">
-    <h2 class="text-lg font-bold m-3">Achievements</h2>
-    {#if achievements.filter(a => a.completed).length === 0}
-      <p class="text-center m-3 mt-8 opacity-80">No achievement unlocked</p>
-    {:else}
-      {#each achievements as a (a.id)}
-        {#if a.completed}
-          <div class="card w-auto bg-base-100 card-md shadow-sm">
-            <div class="card-body flex flex-row">
-              <p>{a.text}</p>
-              <input
-                type="checkbox"
-                class={`checkbox ${a.colorUnlocked}`}
-                onclick={() => handleClick(a.colorUnlocked)}
-              />
-            </div>
-          </div>
-        {/if}
-      {/each}
-    {/if}
-  </div>
+  <Modal {show}/>
+  <button onclick={() => show = !show} class="absolute right-4 bottom-[10vh] btn btn-primary h-[50px] w-[50px]">
+    <span class="material-symbols-outlined">
+      trophy
+    </span>
+  </button>
+
 </main>
