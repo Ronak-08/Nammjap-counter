@@ -76,10 +76,8 @@ function tag() {
 }
 
 function finalizeYesterday(day,count) {
+  if(!day) return;
   const d = JSON.parse(localStorage.getItem("daily") ?? "{}");
-  const hasAnyHistory = Object.keys(d).length > 0;
-
-  if(!hasAnyHistory) return;
   d[day] = count;
   localStorage.setItem("daily", JSON.stringify(d));
 }
@@ -91,8 +89,11 @@ onMount(() => {
     setTimeout(() => modal?.showModal(), 0);
     localStorage.setItem('modalShown', 'true');
   }
+  if(!localStorage.getItem("day")){
+  localStorage.setItem("day", today)
+}
   let savedDay = localStorage.getItem("day");
-  if(savedDay !== today) {
+  if(savedDay && savedDay !== today) {
     finalizeYesterday(savedDay,data.dailyCount);
     data.dailyCount = 0;
     localStorage.setItem("day",today);
