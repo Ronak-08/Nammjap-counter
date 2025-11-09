@@ -1,6 +1,5 @@
 <script>
 import '../app.css';
-import favicon from '$lib/assets/favicon.svg';
 import { page } from '$app/state';
 import { onMount } from 'svelte';
 import { restore } from '$lib/state.svelte';
@@ -14,10 +13,6 @@ onMount(() => {
 });
 
 </script>
-
-<svelte:head>
-  <link rel="icon" href={favicon} />
-</svelte:head>
 
 {@render children()}
 <div class="dock dock-md">
