@@ -29,6 +29,7 @@ function clearData() {
   data.dailyCount = 0;
   data.dailyGoal = 1000;
   localStorage.removeItem("data");
+  localStorage.removeItem("shop");
   localStorage.removeItem("modalShown");
   localStorage.removeItem("daily");
   localStorage.removeItem("day");
@@ -40,7 +41,7 @@ function getLastWeekTotals() {
   const dates = Object.keys(data).sort()
 
   const last7 = dates.slice(-7)
-  return last7.map(d => ({ date: d, count: data[d] }))
+  return last7.map(d => ({ date: d, count: data[d] })).reverse()
 }
 
 async function syncFunc() {
@@ -86,15 +87,15 @@ function saveCreds() {
       class="input my-3 w-full rounded-3xl input-accent"
     />
 
-  <div class="modal-action ml-auto">
-    <button
-      type="button"
-      class="btn btn-primary rounded-3xl"
-      onclick={saveCreds}
-    >
-      Save
-    </button>
-  </div>
+    <div class="modal-action ml-auto">
+      <button
+        type="button"
+        class="btn btn-primary rounded-3xl"
+        onclick={saveCreds}
+      >
+        Save
+      </button>
+    </div>
   </div>
   <form method="dialog" class="modal-backdrop">
     <button>close</button>
@@ -131,28 +132,47 @@ function saveCreds() {
     </div>
   </div>
 
-  <p class="flex justify-between bg-primary text-primary-content p-2 px-3 rounded-lg m-10 mb-2">Total (in Lifetime) <span  class="font-bold">{data.count}</span></p>
-  <p class="flex justify-between bg-secondary text-secondary-content opacity-90 p-2 px-3 rounded-lg m-10 my-2">Today <span  class="font-bold">{data.dailyCount}/{data.dailyGoal}</span></p>
- <div class="divider"></div>
-<div class="wrap p-4">
-  <h2 class="text-lg font-bold m-3 mb-8">Last 7 days</h2>
-
-  {#if getLastWeekTotals().length > 0}
-    {#each getLastWeekTotals() as day}
-      <div class="flex bg-base-200 p-2 px-4 rounded-2xl justify-between m-4">
-        <span>{day.date}</span>
-        <span>{day.count}</span>
+  <div class="grid grid-cols-2 gap-4 m-6 mt-8">
+    <div class="flex flex-col items-center justify-center bg-primary text-primary-content p-5 rounded-2xl shadow-lg">
+      <span class="text-4xl font-bold">{data.count}</span>
+      <span class="text-sm uppercase tracking-wide opacity-80 mt-1">Lifetime</span>
+    </div>
+    <div class="flex flex-col items-center justify-center bg-secondary text-secondary-content p-5 rounded-2xl shadow-lg">
+      <div class="flex items-baseline gap-1">
+        <span class="text-4xl font-bold">{data.dailyCount}</span>
+        <span class="text-xl opacity-70">/{data.dailyGoal}</span>
       </div>
-    {/each}
-  {:else}
-    <p class="text-center opacity-60 text-sm">no data yet</p>
-  {/if}
-</div>
+      <span class="text-sm uppercase tracking-wide opacity-80 mt-1">Today</span>
+    </div>
+  </div>
 
-<div class="flex justify-center items-center">
-  <progress class="progress progress-primary m-6 w-[80vw]" value={data.count} max={1000000}></progress>
-</div>
- <div class="divider"></div>
+  <div class="divider"></div>
+  <div class="w-full p-4">
+    <h2 class="text-lg font-bold mb-4 px-2 opacity-90">History</h2>
+
+    {#if getLastWeekTotals().length > 0}
+      <div class="flex flex-col bg-base-200/50 rounded-2xl overflow-hidden">
+        {#each getLastWeekTotals() as day, i}
+          <div class="flex justify-between items-center p-3 px-4 hover:bg-base-200 transition-colors 
+            {i !== getLastWeekTotals().length - 1 ? 'border-b border-base-300' : ''}">
+            <div class="flex flex-col">
+              <span class="text-sm font-semibold opacity-80">{day.date}</span>
+            </div>
+            <div class="badge badge-lg font-bold {day.count > 0 ? 'badge-primary' : 'badge-ghost'}">
+              {day.count}
+            </div>
+          </div>
+        {/each}
+      </div>
+    {:else}
+      <p class="text-center opacity-60 text-sm mt-10">No history found.</p>
+    {/if}
+  </div>
+
+  <div class="flex justify-center items-center">
+    <progress class="progress progress-primary m-6 w-[80vw]" value={data.count} max={1000000}></progress>
+  </div>
+
   <Modal {show}/>
   <button onclick={() => show = !show} class="absolute right-4 bottom-[90px] btn btn-primary h-[50px] w-[50px]">
     <span class="material-symbols-outlined">

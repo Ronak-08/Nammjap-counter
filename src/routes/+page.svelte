@@ -10,7 +10,6 @@ let percent = $derived(() =>
 );
 let showToast = $state(false);
 let timer;
-let floats = $state([]);
 let today = new Date().toDateString();
 let modal = $state(null);
 let shown = $state(false);
@@ -19,10 +18,7 @@ function save(evt) {
   if (!browser) return;
   data.count++;
   data.dailyCount++;
-  floats.push({id: Date.now(), text: "राधा", x: evt.clientX, y: evt.clientY})
-  setTimeout(() => {
-    floats =  floats.filter(f => f.id !== floats.id);
-  }, 400);
+  if(data.count % 1000 === 0) {data.coins++;};
   clearTimeout(timer);
   timer = setTimeout(() => {
     saveData();
@@ -34,7 +30,7 @@ function save(evt) {
       }, 3000);
       localStorage.setItem("goalShown", today);
     }
-  },500);
+  },1000);
 }
 
 $effect(() => {
@@ -44,7 +40,7 @@ $effect(() => {
 })
 
 function colorClass() {
-  if (data.dailyCount < data.dailyGoal) return "text-secondary-content";
+  if (data.dailyCount < data.dailyGoal) return "text-base-content";
 
   const diff = data.dailyCount - data.dailyGoal;
   const stage = Math.floor(diff / 1000);
@@ -101,8 +97,9 @@ onMount(() => {
 });
 
 $effect(() => {
-  if(data.dailyGoal) saveData();
-})
+  const n = Number(data.dailyGoal);
+  if (!isNaN(n)) data.dailyGoal = n;
+});
 </script>
 
 {#if !shown}
@@ -110,7 +107,7 @@ $effect(() => {
     <div class="modal-box">
       <h3 class="text-lg font-bold">Hello!</h3>
       <p class="py-4">Enter your daily goal.</p>
-      <input type="number" bind:value={data.dailyGoal} placeholder="100,200.." class="input" />
+      <input min="100" type="number" bind:value={data.dailyGoal} placeholder="100,200.." class="input" />
     </div>
     <form method="dialog" class="modal-backdrop">
       <button>close</button>
@@ -121,38 +118,35 @@ $effect(() => {
 <main class="flex flex-col items-center h-full justify-between overflow-hidden">
   <div tabindex="0" role="button" onclick="{() => {save(event)}}" class="h-dvh absolute bg-transparent inset-0 z-0"></div>
   
-  <div class="badge  fixed left-2 top-[15px]">
+  <div class="flex w-full items-center justify-between mx-4 p-2">
+  <div class="badge">
     {tag()}
   </div>
+  <div class="p-2 font-bold font-bold text-primary">{data.coins}</div>
+    </div>
 
-  <h1 class={`text-[10rem] md:text-[13rem] z-0 ${textColor()} my-6`} >राधा</h1>
+  <h1 class={`text-[10rem] md:text-[13rem] z-0 ${textColor()}`} >राधा</h1>
 
   <div class={`radial-progress ${colorClass()}`} style="--value:{percent()}; --size:12rem; --thickness: 9px;" aria-valuenow={percent()} role="progressbar">
-    <p class={`p-1 px-3 bg-secondary text-shadow-sm rounded-2xl font-bold text-xl ${colorClass()}`}>{data.dailyCount}</p>
+    <p class="font-bold text-3xl p-2">{data.dailyCount}</p>
   </div>
 
   {#if showToast}
     <div class="toast toast-top toast-center">
       <div class="alert alert-info">
         <span>
-          Goal reached! 🔥  
-          But this is not the finish — keep going, keep rising ✨
+          Goal reached! 🔥
         </span>
       </div>
     </div>
   {/if}
 
-  {#each floats as f (f.id)}
-    <p class="absolute float text-xl pointer-events-none" style="left:{f.x}px; top:{f.y}px;">{f.text}</p>
-  {/each}
 </main>
 
+
 <style>
-.float {
-  animation: float 600ms ease-out forwards;
-}
-@keyframes float {
-  0%   { transform: translateY(0);   opacity:1; }
-  100% { transform: translateY(-50px); opacity:0; }
+main {
+  user-select: none;
+  -moz-user-select: none;
 }
 </style>

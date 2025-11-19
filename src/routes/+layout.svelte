@@ -29,4 +29,10 @@ onMount(() => {
     </span>
     <span class="dock-label">Stats</span>
   </a>
+  <a href="/shop" class={isActive("/shop")}>
+    <span class="material-symbols-outlined">
+      shopping_cart
+    </span>
+    <span class="dock-label">Shop</span>
+  </a>
 </div>
