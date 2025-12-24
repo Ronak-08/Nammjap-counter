@@ -3,6 +3,9 @@ import { browser } from '$app/environment';
 import { onMount } from 'svelte';
 import { fade, fly } from 'svelte/transition';
 import { data, restore, saveData } from '$lib/state.svelte.js';
+import Modal from '$lib/components/Modal.svelte';
+import Button from '$lib/components/Button.svelte';
+	import CircularProgress from '$lib/components/CircularProgress.svelte';
 
 const getToday = () => new Date().toDateString();
 
@@ -12,10 +15,9 @@ let percent = $derived(() =>
 
 let showToast = $state(false);
 let timer;
-let modal = $state(null);
-let shown = $state(false);
+let show = $state(false);
 
-function save(evt) {
+function save() {
   if (!browser) return;
   checkAndResetDay(); 
   data.count++;
@@ -41,28 +43,6 @@ function checkGoalToast() {
     localStorage.setItem("goalShown", today);
   }
 }
-
-$effect(() => {
-  if (data.count > 0 && data.count % 1000 === 0 && typeof sync !== 'undefined') {
-    sync();
-  }
-});
-
-function colorClass() {
-  if (data.dailyCount < data.dailyGoal) return "text-base-content";
-
-  const diff = data.dailyCount - data.dailyGoal;
-  const stage = Math.floor(diff / 1000);
-
-  if (stage < 1) return "text-yellow-300";
-  if (stage < 3) return "text-yellow-500";
-  if (stage < 5) return "text-green-300";
-  if (stage < 7) return "text-purple-500";
-  if (stage < 9) return "text-purple-700";
-
-  return "text-black font-bold";
-}
-
 function textColor() {
   if (!browser) return "text-base-content";
   return data.setColor || "text-base-content";
@@ -118,79 +98,41 @@ function checkAndResetDay() {
 onMount(() => {
   restore(); 
   checkAndResetDay(); 
-
   const alreadyShown = localStorage.getItem('modalShown');
   if (!alreadyShown) {
-    setTimeout(() => modal?.showModal(), 0); 
-    localStorage.setItem('modalShown', 'true');
+    show = true;
+    localStorage.setItem('modalShown', true);
   }
-
-  const handleVisibility = () => {
-    if (document.visibilityState === 'visible') {
-      checkAndResetDay();
-    }
-  };
-
-  document.addEventListener("visibilitychange", handleVisibility);
-
-  return () => {
-    document.removeEventListener("visibilitychange", handleVisibility);
-  };
+  checkAndResetDay();
 });
 
-$effect(() => {
-  const n = Number(data.dailyGoal);
-  if (!isNaN(n)) data.dailyGoal = n;
-});
 
 </script>
 
 
-{#if !shown}
-  <dialog bind:this={modal} class="modal">
-    <div class="modal-box">
-      <h3 class="text-lg font-bold">Hello!</h3>
-      <p class="py-4">Enter your daily goal.</p>
-      <input min="100" type="number" bind:value={data.dailyGoal} placeholder="100,200.." class="input" />
-    </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
-{/if}
-
-<main class="flex flex-col items-center h-full justify-between overflow-hidden">
-  <div tabindex="0" role="button" onclick="{() => {save(event)}}" class="h-dvh absolute bg-transparent inset-0 z-0"></div>
-
-  <div class="flex w-full items-center justify-between mx-4 p-2">
-    <div class="badge">
-      {tag()}
-    </div>
-    <div class="p-2 font-bold text-primary">{data.coins}</div>
+<Modal {show}>
+  <p class="text-3xl">Hello!</p>
+  <div class="flex mt-2 flex-col gap-3">
+    <p class="mx-1 text-on-surface-variant">Enter your daily goal</p>
+    <input class="rounded-2xl font-medium border-2 border-outline-variant/70 focus:border-primary bg-surface-container p-2 py-3 focus:rounded-xl transition w-full " type="text" bind:value={data.dailyGoal} placeholder="Goal">
   </div>
-
-  <h1 class={`text-[10rem] md:text-[13rem] z-0 ${textColor()}`} >राधा</h1>
-
-  <div class={`radial-progress ${colorClass()}`} style="--value:{percent()}; --size:12rem; --thickness: 9px;" aria-valuenow={percent()} role="progressbar">
-    <p class="font-bold text-3xl p-2">{data.dailyCount}</p>
+  <div class="flex justify-end gap-2 mt-2 w-full">
+    <Button class="px-3" onclick={() => show = !show} variant="outline">Cancel</Button>
+    <Button onclick={() => {saveData; show = !show}} class="px-5">Set</Button>
   </div>
+</Modal>
 
-  {#if showToast}
-    <div class="toast toast-top toast-center">
-      <div class="alert alert-info">
-        <span>
-          Goal reached! 🔥
-        </span>
-      </div>
+  <div role="button" tabindex="-1" onkeyup={() => {}}  onclick={save} class="fixed bg-transparent z-0 inset-0 h-full w-full"></div>
+
+<div class="border h-full p-3">
+  <header>
+    <p>{tag()}</p>
+    hello
+  </header>
+
+  <div class="flex h-full justify-center items-center flex-col">
+  <input type="text" onchange={saveData} placeholder="name" bind:value={data.nam} class="{textColor} text-center m-2 mb-10 text-[15vw] font-bold z-2 max-w-[50vw]">
+
+  <CircularProgress className="mt-6" max={data.dailyGoal} value={data.dailyCount} >{data.dailyCount}</CircularProgress>
     </div>
-  {/if}
-
-</main>
-
-
-<style>
-main {
-  user-select: none;
-  -moz-user-select: none;
-}
-</style>
+</div>

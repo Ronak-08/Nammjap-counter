@@ -1,38 +1,85 @@
-@import 'tailwindcss';
-@plugin "daisyui";
-@plugin "daisyui/theme" {
-  name: "dark";
-  default: true;
-  prefersdark: true;
-  color-scheme: "dark";
-  --color-base-100: oklch(13% 0.028 261.692);
-  --color-base-200: oklch(0.258 0.034 264.7);
-  --color-base-300: oklch(0.349 0.033 256.8);
-  --color-base-content: oklch(0.844 0.000 0.0);
-  --color-primary: oklch(81% 0.111 293.571);
-  --color-primary-content: oklch(28% 0.141 291.089);
-  --color-secondary: oklch(82% 0.111 230.318);
-  --color-secondary-content: oklch(39% 0.09 240.876);
-  --color-accent: oklch(0.860 0.058 168.1);
-  --color-accent-content: oklch(0.352 0.270 190.5);
-  --color-neutral: oklch(27% 0.033 256.848);
-  --color-neutral-content: oklch(0.847 0.011 247.8);
-  --color-info: oklch(71% 0.143 215.221);
-  --color-info-content: oklch(45% 0.085 224.283);
-  --color-success: oklch(89% 0.196 126.665);
-  --color-success-content: oklch(40% 0.101 131.063);
-  --color-warning: oklch(80% 0.114 19.571);
-  --color-warning-content: oklch(44% 0.177 26.899);
-  --color-error: oklch(0.411 0.204 27.5);
-  --color-error-content: oklch(0.981 0.139 18.3);
-  --radius-selector: 2rem;
-  --radius-field: 1rem;
-  --radius-box: 1rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 0;
-  --noise: 1;
+@import "tailwindcss";
+
+@theme {
+  --color-primary: rgb(129 211 223);
+  --color-primary-tint: rgb(129 211 223);
+  --color-on-primary: rgb(0 54 60);
+  --color-primary-container: rgb(0 79 87);
+  --color-on-primary-container: rgb(157 240 252);
+
+  --color-secondary: rgb(177 203 207);
+  --color-on-secondary: rgb(28 52 56);
+  --color-secondary-container: rgb(50 75 78);
+  --color-on-secondary-container: rgb(205 231 235);
+
+  --color-tertiary: rgb(185 198 234);
+  --color-on-tertiary: rgb(35 48 77);
+  --color-tertiary-container: rgb(58 70 100);
+  --color-on-tertiary-container: rgb(217 226 255);
+
+  --color-error: rgb(255 180 171);
+  --color-on-error: rgb(105 0 5);
+  --color-error-container: rgb(147 0 10);
+  --color-on-error-container: rgb(255 218 214);
+
+  --color-bg: rgb(14 20 21);
+  --color-on-bg: rgb(222 228 228);
+
+  --color-surface: rgb(14 20 21);
+  --color-on-surface: rgb(222 228 228);
+  --color-surface-variant: rgb(63 72 74);
+  --color-on-surface-variant: rgb(190 200 202);
+
+  --color-outline: rgb(137 146 148);
+  --color-outline-variant: rgb(63 72 74);
+
+  --color-shadow: rgb(0 0 0);
+  --color-scrim: rgb(0 0 0);
+
+  --color-inverse-surface: rgb(222 228 228);
+  --color-inverse-on-surface: rgb(43 49 50);
+  --color-inverse-primary: rgb(0 105 115);
+
+  --color-primary-fixed: rgb(157 240 252);
+  --color-on-primary-fixed: rgb(0 31 35);
+  --color-primary-fixed-dim: rgb(129 211 223);
+  --color-on-primary-fixed-variant: rgb(0 79 87);
+
+  --color-secondary-fixed: rgb(205 231 235);
+  --color-on-secondary-fixed: rgb(5 31 34);
+  --color-secondary-fixed-dim: rgb(177 203 207);
+  --color-on-secondary-fixed-variant: rgb(50 75 78);
+
+  --color-tertiary-fixed: rgb(217 226 255);
+  --color-on-tertiary-fixed: rgb(13 27 55);
+  --color-tertiary-fixed-dim: rgb(185 198 234);
+  --color-on-tertiary-fixed-variant: rgb(58 70 100);
+
+  --color-surface-dim: rgb(14 20 21);
+  --color-surface-bright: rgb(52 58 59);
+  --color-surface-container-lowest: rgb(9 15 16);
+  --color-surface-container-low: rgb(23 29 30);
+  --color-surface-container: rgb(27 33 34);
+  --color-surface-container-high: rgb(37 43 44);
+  --color-surface-container-highest: rgb(48 54 55);
+
+  --font-sans: "Roboto", system-ui, sans-serif;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+:root {
+  font-family: var(--font-sans);
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.3s, color 0.3s;
+}
+input {
+  outline: none;
 }
 
 

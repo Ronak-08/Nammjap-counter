@@ -1,38 +1,19 @@
 <script>
 import '../app.css';
-import { page } from '$app/state';
 import { onMount } from 'svelte';
 import { restore } from '$lib/state.svelte';
+import Tabbar from '$lib/components/Tabbar.svelte';
 
 let { children } = $props();
-const isActive = (path) => {
-  return page.url.pathname === path ? "dock-active" : "none";
-}
 onMount(() => {
   restore();
 });
 
 </script>
 
-{@render children()}
-<div class="dock dock-md">
-  <a href="/" class={isActive("/")}>
-    <span class="material-symbols-outlined">
-      home
-    </span>
-    <span class="dock-label">Home</span>
-  </a>
-
-  <a href="/achievements" class={isActive("/achievements")}>
-    <span class="material-symbols-outlined">
-      bar_chart
-    </span>
-    <span class="dock-label">Stats</span>
-  </a>
-  <a href="/shop" class={isActive("/shop")}>
-    <span class="material-symbols-outlined">
-      shopping_cart
-    </span>
-    <span class="dock-label">Shop</span>
-  </a>
+<div class="h-dvh flex flex-col">
+  <main class="flex-1 bg-bg text-on-bg overflow-y-auto">
+    {@render children()}
+  </main>
+  <Tabbar />
 </div>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html class="dark" lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="color-scheme" content="dark light">
@@ -12,20 +12,12 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Counter" />
     <link rel="manifest" href="/site.webmanifest" />
-    <link rel="preload"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0&icon_names=bar_chart,close,delete_forever,home,shopping_cart,sync,sync_arrow_down,trophy&display=swap"
-      as="style"
-      onload="this.rel='stylesheet'">
-    <noscript>
-      <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0&icon_names=bar_chart,close,delete_forever,home,shopping_cart,sync,sync_arrow_down,trophy&display=swap">
-    </noscript>
 
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">
     <div style="display: contents">%sveltekit.body%</div>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/eruda"></script> -->
-    <!-- <script>eruda.init();</script> -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
   </body>
 </html>

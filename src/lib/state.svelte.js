@@ -1,5 +1,6 @@
 export let data = $state({
   count: 0,
+  nam: "",
   dailyCount: 0,
   dailyGoal: 1000,
   setColor: null,
@@ -30,31 +31,4 @@ export function restore() {
 }
 export function saveData() {
   localStorage.setItem("data", JSON.stringify(data))
-}
-
-export async function sync() {
-  const { dailyCount, ...dataToSync } = data;
-
-  await fetch("/api/sync", {
-    method: "POST",
-    body: JSON.stringify({
-      ...dataToSync,
-      shop
-    })
-  });
-}
-
-export async function pullFromServer() {
-  const r = await fetch("/api/sync/pull");
-  if (!r.ok) return;
-
-  const serverData = await r.json();
-
-  if (serverData.shop) {
-    Object.assign(shop, serverData.shop);
-    save();
-  }
-
-  Object.assign(data, serverData);
-  saveData();
 }
