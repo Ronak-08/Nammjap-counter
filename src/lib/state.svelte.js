@@ -5,6 +5,8 @@ export let data = $state({
   dailyGoal: 1000,
   setColor: null,
   coins: 0,
+  level: 1,
+  exp: 100,
 })
 
 export let shop = $state([

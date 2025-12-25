@@ -11,7 +11,7 @@ onMount(() => {
 
 </script>
 
-<div class="h-dvh flex flex-col">
+<div class="h-dvh flex md:flex-row-reverse flex-col">
   <main class="flex-1 bg-bg text-on-bg overflow-y-auto">
     {@render children()}
   </main>

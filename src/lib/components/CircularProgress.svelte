@@ -2,7 +2,7 @@
 let { 
   value = 0,      
   size = 150,      
-  max = 1000,
+  max = 0,
   stroke = 5,     
   className = "",
   children        
@@ -10,11 +10,11 @@ let {
 
 const radius = 50 - (stroke / 2); 
 const circumference = 2 * Math.PI * radius;
-let progressRatio = $derived(Math.min(Math.max(value / max, 0), 1));
-
-let dashOffset = $derived(
-  circumference - (progressRatio / 100) * circumference
+let progressRatio = $derived(
+  max > 0 ? Math.min(Math.max(value / max, 0), 1) : 0
 );
+
+let dashOffset = $derived(circumference * (1 - progressRatio));
 
 let ringColor = $derived.by(() => {
   if(value < max) {return "text-primary";}
@@ -66,7 +66,7 @@ let ringColor = $derived.by(() => {
   </svg>
 
   {#if children}
-    <div class="absolute text-2xl inset-0 flex items-center justify-center">
+    <div class="absolute inset-0 flex items-center justify-center">
       {@render children()}
     </div>
   {/if}
