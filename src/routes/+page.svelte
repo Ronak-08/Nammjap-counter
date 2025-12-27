@@ -1,6 +1,6 @@
 <script>
 import { browser } from '$app/environment';
-import { onMount } from 'svelte';
+import { onDestroy, onMount, tick } from 'svelte';
 import { fade, fly } from 'svelte/transition';
 import { data, restore, saveData } from '$lib/state.svelte.js';
 import Modal from '$lib/components/Modal.svelte';
@@ -15,6 +15,15 @@ let show = $state(false);
 let content = $state("");
 let reqXp = $derived(10 * data.level ** 2);
 
+async function triggerToast(msg) {
+  if (showToast) {
+    showToast = false; 
+    await tick();
+  }
+  content = msg;
+  showToast = true;
+}
+
 function save() {
   if (!browser) return;
   checkAndResetDay(); 
@@ -22,17 +31,22 @@ function save() {
   data.dailyCount++;
   data.exp++;
   levelUp();
-  if (data.count % 1000 === 0) {
-    data.coins++;
+  const milestones = [100, 500, 1000, 5000, 10000, 25000, 50000, 100000];
+  if (milestones.includes(data.count)) {
+    const bonus = Math.floor(data.count / 100);
+    data.coins += bonus;
+    triggerToast(`🎯 ${data.count} milestone! +${bonus} coins`);
   }
   clearTimeout(timer);
   timer = setTimeout(() => {
     saveData();
-    if(!showToast){
     checkGoalToast();
-    }
-  }, 1000);
+  }, 500);
 }
+
+onDestroy(() => {
+  if(browser) saveData();
+})
 
 function levelUp() {
   let oldLevel = data.level;
@@ -42,25 +56,29 @@ function levelUp() {
   }
 
   if(data.level > oldLevel) {
-    content = `Level Up! You are now level ${data.level} ⚡`;
-    showToast = true;
+    let coinReward;
+    if (data.level <= 10) coinReward = 2;
+      else if (data.level <= 25) coinReward = 5;
+        else if (data.level <= 50) coinReward = 10;
+          else coinReward = 20;
+    data.coins += coinReward;
+
+    triggerToast(`Leveled Up to ${data.level} (+${coinReward} coins)`);
   }
 }
 
-function checkGoalToast() {
-  const today = getToday();
-  const lastShown = localStorage.getItem("goalShown");
-  if (data.dailyCount >= data.dailyGoal && lastShown !== today) {
-    content = "Goal Completed! 🎉";
-    showToast = true;
-
-    localStorage.setItem("goalShown", today);
+  function checkGoalToast() {
+    const today = getToday();
+    const lastShown = localStorage.getItem("goalShown");
+    if (data.dailyCount >= data.dailyGoal && lastShown !== today) {
+      localStorage.setItem("goalShown", today);
+      triggerToast("Goal Completed! 🎉");
+    }
   }
-}
 
 function textColor() {
-  if (!browser) return "text-base-content";
-  return data.setColor || "text-base-content";
+  if (!browser) return "text-on-surface";
+  return data.setColor || "text-on-surface";
 }
 
 function tag() {
@@ -79,7 +97,12 @@ function finalizeYesterday(day, count) {
   if (!day) return;
   try {
     const d = JSON.parse(localStorage.getItem("daily") ?? "{}");
-    d[day] = count;
+    d[day] = {
+      date: day,
+      count: count,
+      timestamp: new Date(day).getTime()
+    };
+    
     localStorage.setItem("daily", JSON.stringify(d));
   } catch (e) {
     console.error("Failed to save history", e);
@@ -88,25 +111,23 @@ function finalizeYesterday(day, count) {
 
 function checkAndResetDay() {
   if (!browser) return;
-
   const today = getToday();
   const savedDay = localStorage.getItem("day");
-
-  if (!savedDay) {
-    localStorage.setItem("day", today);
-    return;
-  }
-
-  if (savedDay !== today) {
-    console.log(`New day detected: ${today}. Resetting count.`);
-
+  
+  if (savedDay && savedDay !== today) {
+    const yesterday = new Date(new Date(today).getTime() - 86400000).toDateString();
+    
+    if (savedDay === yesterday && data.dailyCount >= data.dailyGoal) {
+      data.streak++;
+      if (data.streak > data.longestStreak) data.longestStreak = data.streak;
+      triggerToast(`🔥 ${data.streak} day streak!`);
+    } else {
+      data.streak = 0;
+    }
     finalizeYesterday(savedDay, data.dailyCount);
-
     data.dailyCount = 0;
-
     localStorage.setItem("day", today);
-
-    saveData(); 
+    saveData();
   }
 }
 
@@ -122,34 +143,58 @@ onMount(() => {
 });
 
 
+
+	function handleSave() {
+		const val = data.dailyGoal;
+		if (!val || val < 108 || val > 1_000_000) return;
+		saveData();
+		show = false;
+	}
 </script>
 
-
 <Modal {show}>
-  <p class="text-3xl">Hello!</p>
-  <div class="flex mt-2 flex-col gap-3">
-    <p class="mx-1 text-on-surface-variant">Enter your daily goal</p>
-    <input class="rounded-2xl font-medium border-2 border-outline-variant/70 focus:border-primary bg-surface-container p-2 py-3 focus:rounded-xl transition w-full " type="text" bind:value={data.dailyGoal} placeholder="Goal">
-  </div>
-  <div class="flex justify-end gap-2 mt-2 w-full">
-    <Button class="px-3 active:rounded-2xl" onclick={() => show = !show} variant="outline">Cancel</Button>
-    <Button onclick={() => {saveData; show = !show}} class="px-5">Set</Button>
-  </div>
+	<div class="flex flex-col gap-3 p-1">
+		<h2 class="text-2xl font-normal mb-3 text-on-surface">Daily Goal</h2>
+		
+			<input 
+				type="number" 
+				bind:value={data.dailyGoal}
+				min="108" 
+				max="1000000"
+				required
+				class="peer w-full rounded-xl bg-surface-container-highest px-3 py-2.5 text-lg text-on-surface outline-none ring-2 ring-transparent transition-all focus:ring-primary invalid:ring-error invalid:text-error"
+				placeholder="Target Amount"
+			>
+
+		<div class="flex w-full mt-4 justify-end gap-2">
+			<Button class="px-4" variant="text" onclick={() => show = false}>Cancel</Button>
+			<Button class="px-4" onclick={handleSave}>Set</Button>
+		</div>
+	</div>
 </Modal>
 
 <Toast time="2000" show={showToast} content={content} />
 
 <div role="button" tabindex="-1" onkeyup={() => {}}  onclick={save} class="fixed bg-transparent z-0 inset-0 h-full w-full"></div>
 
-<div class="flex h-full p-2 flex-col">
+<div class="flex h-full p-2 md:p-5 flex-col">
   <header class="flex justify-between items-center bg-surface-container/60 rounded-full p-3">
     <CircularProgress size="35" className="text-sm font-medium text-on-surface" stroke="6" value={data.exp} max={reqXp} ><span>{data.level}</span></CircularProgress>
     <p class="p-1 shadow-md transition-all hover:rounded-2xl px-3 text-sm rounded-full text-on-surface bg-surface-container-high">{tag()}</p>
     <p class="px-3 p-1 text-secondary font-light ">{data.coins}</p>
   </header>
 
-  <div class="flex flex-1 justify-evenly items-center flex-col">
-    <input type="text" onchange={saveData} placeholder="name" bind:value={data.nam} class="{textColor} text-center m-2 text-[4rem] text-on-surface font-bold z-2 max-w-[60vw]">
-    <CircularProgress className="text-3xl" max={data.dailyGoal} value={data.dailyCount} >{data.dailyCount}</CircularProgress>
+  <div class="flex flex-1 items-center mt-8 md:m-auto md:justify-center flex-col">
+<input 
+  type="text" 
+  placeholder="name" 
+      bind:value={data.nam}
+  class="text-center m-2 text-[3rem] md:text-[5rem] font-bold z-2 max-w-[60vw] 
+         {textColor()}
+         placeholder:opacity-50"
+  style="{textColor()} caret-color: currentColor;"
+>
+
+    <CircularProgress className="text-3xl {textColor()} mt-16" max={data.dailyGoal} value={data.dailyCount} ><span class="{textColor()}">{data.dailyCount}</span></CircularProgress>
   </div>
 </div>

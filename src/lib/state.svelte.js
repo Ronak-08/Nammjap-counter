@@ -3,28 +3,15 @@ export let data = $state({
   nam: "",
   dailyCount: 0,
   dailyGoal: 1000,
-  setColor: null,
+  setColor: 'text-on-surface',
   coins: 0,
   level: 1,
-  exp: 100,
+  unlockedColors: ['text-on-surface'],
+  exp: 0,
+  streak: 0,
+  longestStreak: 0,
+  lastActiveDay: null,
 })
-
-export let shop = $state([
-  {name:"Gold", purchased: false, color:"text-yellow-500", selected: false, price: 100}, 
-  {name:"Cyan", purchased: false,color: "text-cyan-500", selected: false, price: 200}, 
-  {name:"Blue", purchased: false, color: "text-blue-300", selected: false, price: 300}, 
-  {name:"Green", purchased: false, color:"text-green-500", selected: false, price: 500}, 
-])
-
-export function loadShop() {
-  const raw = localStorage.getItem("shop");
-  if(!raw) return
-  Object.assign(shop, JSON.parse(raw))
-}
-
-function save() {
-  localStorage.setItem("shop", JSON.stringify(shop))
-}
 
 export function restore() {
   const raw = localStorage.getItem("data")
@@ -32,5 +19,5 @@ export function restore() {
   Object.assign(data, JSON.parse(raw))
 }
 export function saveData() {
-  localStorage.setItem("data", JSON.stringify(data))
+  localStorage.setItem("data", JSON.stringify(data));
 }

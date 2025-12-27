@@ -1,70 +1,91 @@
 <script>
-	import { browser } from "$app/environment";
-import { saveData,shop,data, loadShop } from "$lib/state.svelte.js";
-	import { onMount } from "svelte";
-	import { fade } from "svelte/transition";
+import { tick } from "svelte";
+import { fade } from "svelte/transition";
+import Toast from "$lib/components/Toast.svelte";
+import { data, saveData } from "$lib/state.svelte";
 
-  let show = $state(false);
-  let timeout;
+const colors = [
+  { name: 'Default', class: 'text-on-surface', cost: 0 },
+  { name: 'Primary', class: 'text-primary', cost: 50 },
+  { name: 'Secondary', class: 'text-secondary', cost: 50 },
+  { name: 'Blue', class: 'text-blue-400', cost: 75 },
+  { name: 'Green', class: 'text-green-400', cost: 100 },
+  { name: 'Red', class: 'text-red-400', cost: 200 },
+  { name: 'Error', class: 'text-error', cost: 300 },
+  { name: 'Purple', class: 'text-purple-400', cost: 550 },
+  { name: 'Pink', class: 'text-pink-400', cost: 650 },
+  { name: 'Orange', class: 'text-orange-400', cost: 750 },
+  { name: 'Gold', class: 'text-yellow-500', cost: 900 }
+];
 
-function save() {
- if(!browser) return; 
-  localStorage.setItem("shop", JSON.stringify(shop));
+let toast = $state({ show: false, msg: '' });
+
+async function notify(msg) {
+  if (toast.show) {
+    toast.show = false;
+    await tick();
+  }
+  toast = { show: true, msg };
 }
-function purchase(color) {
-    if(data.coins >= color.price) {
-  data.coins -= color.price;
-  color.purchased = true;
-    save();
+
+function handleColor(item) {
+  if (data.unlockedColors.includes(item.class)) {
+    data.setColor = item.class;
     saveData();
-    } else {
-       show = true;
-      clearTimeout(timeout);
-     timeout = setTimeout(() => {
-     show = false;
-      }, 800);
-    }
-}
+    notify(`Applied ${item.name}`);
+    return;
+  }
+  if (data.coins < item.cost) return notify("Insufficient funds");
 
-function setColor(d) {
-  if(!d.purchased) return;
-  shop.forEach(c => c.selected = false);
-  d.selected = true;
-  data.setColor = d.color;
+  data.coins -= item.cost;
+  data.unlockedColors.push(item.class);
+  data.setColor = item.class;
   saveData();
-  save();
+  notify(`Unlocked ${item.name}`);
 }
-
-  onMount(() => {  
-    loadShop();
-})
 </script>
 
-  <div class="navbar bg-base-100 shadow-sm">
-    <div class="flex-1">
-      <p class="btn btn-ghost text-xl">Shop</p>
-    </div>
-  <div class="p-2 font-bold m-4 text-primary">{data.coins}</div>
-  </div>
-<main>
-  <div class="bg-base-100 p-2 m-2 rounded-box shadow-md">
-    {#each shop as color}
-    <div class="flex p-2 bg-base-200 items-center rounded-box my-2 justify-between">
-        <p class={`mx-2 ${color.color}`}>{color.name}</p>
-        <div class="flex items-center gap-2">
-        <button disabled={color.purchased} onclick={() => {purchase(color)}} class="btn w-fit">{color.price}</button>
-        <input type="radio" checked={color.selected} disabled={!color.purchased} onchange={() => setColor(color)} name="radio-1" class="radio" />
-        </div>
-      </div>
-{/each}
-  </div>
-</main>
+<Toast time="2000" show={toast.show} content={toast.msg} />
 
-{#if show}
-<div role="alert" transition:fade={{duration:300}} class="alert alert-error fixed top-5 mx-4">
-  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-  </svg>
-  <span>Not enough coins.</span>
+<div class="min-h-full bg-surface p-4 md:p-6">
+  <header class="sticky top-2 z-10 mb-6 flex items-center justify-between rounded-full bg-surface-container/80 px-6 py-3 backdrop-blur-md shadow-sm">
+    <h1 class="text-2xl font-normal text-on-surface">Store</h1>
+    <div class="flex items-center gap-2 rounded-full bg-secondary-container px-3 py-1.5 text-on-secondary-container">
+      <span class="text-sm font-bold">{data.coins}</span>
+    </div>
+  </header>
+
+  <section class="p-2">
+    <h2 class="mb-6 px-2 text-sm font-medium text-on-surface-variant opacity-80">Styles</h2>
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+      {#each colors as c}
+        {@const unlocked = data.unlockedColors.includes(c.class)}
+        {@const active = data.setColor === c.class}
+
+        <button
+          onclick={() => handleColor(c)}
+          disabled={!unlocked && data.coins < c.cost}
+          class="group relative flex flex-col gap-3 overflow-hidden rounded-[20px] bg-surface-container-low p-4 text-left transition-all duration-300 hover:rounded-[28px] hover:bg-surface-container-high active:scale-95 disabled:opacity-50 {active ? 'ring-2 ring-primary ring-offset-surface' : ''}"
+        >
+          <div class="rounded-2xl py-2 text-4xl font-bold transition-transform group-hover:scale-110 {c.class}">
+            Aa
+          </div>
+
+          <div class="flex w-full items-end justify-between">
+            <div>
+              <p class="text-sm font-medium text-on-surface">{c.name}</p>
+              <p class="text-xs text-on-surface-variant/80">{unlocked ? 'Owned' : `${c.cost}`}</p>
+            </div>
+            {#if active}
+              <div class="size-2 rounded-full bg-primary" in:fade></div>
+            {/if}
+          </div>
+
+          {#if !unlocked}
+            <div class="absolute inset-0 bg-surface-scrim/5 opacity-0 transition-opacity group-hover:opacity-100"></div>
+          {/if}
+        </button>
+      {/each}
+    </div>
+  </section>
 </div>
-{/if}
