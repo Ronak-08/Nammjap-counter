@@ -33,68 +33,64 @@ function compare() {
 
 </script>
 
-<div class="p-3 md:p-5">
-  <header class="px-5 text-center mb-10 py-2 rounded-full bg-surface-container/60">
-    <p class="text-3xl font-normal">Stats</p>
+<div class="mx-auto max-w-6xl p-4 md:p-6">
+  <header class="mb-8 rounded-full bg-surface-container/60 py-2 text-center md:mx-auto md:mb-12 md:w-fit md:px-16">
+    <p class="text-3xl font-black text-on-surface">Stats</p>
   </header>
-  <div class="flex m-2 gap-2 md:max-w-[70%] md:mx-auto items-center">
-    <div class="bg-primary flex-1/4 text-on-primary rounded-3xl flex flex-col p-3 size-30 transition hover:opacity-90">
-      <p class="text-sm font-bold px-1">Total</p>
-      <span class="text-4xl text-center mt-3 font-bold">{data.count}</span>
+
+  <div class="mb-8 grid grid-cols-2 p-1 gap-3 md:grid-cols-3 md:gap-4">
+
+    <div class="aspect-square rounded-[28px] bg-primary p-4 text-on-primary transition hover:opacity-90 md:aspect-auto md:h-full md:p-6">
+      <p class="text-sm font-semibold mb-6 md:text-base">Total</p>
+      <span class="text-5xl mx-1 font-black">{data.count}</span>
+      <div class="hidden md:block"></div>
     </div>
-    <div class="bg-primary-container flex-1/2 text-on-primary-container rounded-3xl flex flex-col p-3 size-30">
-      <div class="flex items-center px-1 justify-between">
-        <p class="text-sm font-bold">Today</p>
+
+    <div class="aspect-square flex-col rounded-[28px] bg-primary-container p-4 text-on-primary-container md:aspect-auto md:h-full md:p-6">
+      <div class="flex items-center mb-6 justify-between">
+        <p class="text-sm font-bold md:text-base">Today</p>
         {#if compare()}
           {@const comp = compare()}
-          <p class="text-xs font-semibold {comp.isMore ? 'text-green-300' : 'text-error'}">
+          <p class="text-xs font-semibold md:text-sm {comp.isMore ? 'text-green-500' : 'text-error'}">
             {comp.isMore ? '↑' : '↓'} {comp.isMore ? '+' : ''}{comp.percent}%
           </p>
         {/if}
       </div>
-      <div class="flex mt-3 justify-center">
-        <span class="text-3xl font-medium">{data.dailyCount}/</span><span class="font-light opacity-80 text-3xl">{data.dailyGoal}</span>
+      <div class="flex items-baseline justify-center gap-0.5">
+        <span class="text-4xl font-medium md:text-5xl">{data.dailyCount}</span>
+        <span class="text-2xl font-light opacity-80 md:text-3xl">/{data.dailyGoal}</span>
       </div>
       {#if data.streak > 0}
-         <p class="text-sm text-center font-normal mt-2">{data.streak} streak!</p>
+        <p class="mt-1 text-center text-sm font-normal md:text-base">{data.streak} streak!</p>
       {/if}
     </div>
-  </div>
 
-  <Divider />
-
-  <p class="m-2 mb-5 font-normal text-xl text-on-surface-variant">Level</p>
-  <div class="flex gap-10 md:p-6 md:max-w-[70%] md:mx-auto transition hover:rounded-2xl m-2 items-center p-4 bg-surface-container-high rounded-3xl shadow-sm">
-    <CircularProgress 
-      size="85" 
-      className="text-2xl font-semibold text-on-surface" 
-      stroke="8" 
-      value={data.exp} 
-      max={reqXp}
-    >
-      <span>{data.level}</span>
-    </CircularProgress>
-
-    <div class="flex gap-1 flex-col max-w-full">
-      <p class="text-sm text-on-surface-variant">{data.exp} / {reqXp} XP</p>
-      <p class="text-sm text-primary font-medium">Next: +{getNextCoinReward()} coins</p>
+    <div class="col-span-2 flex items-center gap-6 rounded-[28px] bg-surface-container-high p-4 shadow-sm transition hover:bg-surface-container-highest md:col-span-1 md:flex-col md:items-start md:justify-between md:p-5">
+      <CircularProgress size="60" stroke="6" value={data.exp} max={reqXp} className="text-xl font-semibold">
+        {data.level}
+      </CircularProgress>
+      <div class="flex flex-col gap-1 md:px-3">
+        <p class="text-sm text-on-surface-variant md:text-base">{data.exp} / {reqXp} XP</p>
+        <p class="text-[0.8rem] text-primary md:text-base">Next: +{getNextCoinReward()} coins</p>
+      </div>
     </div>
   </div>
 
-  <Divider />
-
-  {#if history && Object.keys(history).length > 0}
-    <p class="m-2 mb-5 font-normal text-xl text-on-surface-variant">Daily</p>
-    <div class="grid grid-cols-2 p-2 max-h-60 overflow-y-auto sm:grid-cols-3 gap-2">
-      {#each Object.values(history) as item}
-        <div class="p-3 px-4 rounded-3xl transition hover:rounded-2xl bg-surface-container-high border border-outline/10">
-          <div class="text-2xl font-bold">{item.count}</div>
-          <div class="text-xs opacity-60 mt-1">{item.date.slice(0, 10)}</div>
-        </div>
-      {/each}
-    </div>
-  {:else}
-    <p class="text-sm text-center p-2 text-on-surface-variant/80">No data yet</p>
-  {/if}
-
+  <div>
+    <p class="mb-5 ml-2 text-lg font-normal text-on-surface-variant">History</p>
+    {#if history && Object.keys(history).length > 0}
+      <div class="grid p-2 max-h-96 grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        {#each Object.values(history) as item}
+          <div class="flex aspect-4/3 flex-col justify-center rounded-3xl border border-outline/10 bg-surface-container-high p-4 transition hover:bg-surface-container-highest">
+            <div class="text-2xl font-bold md:text-3xl">{item.count}</div>
+            <div class="mt-1 text-xs opacity-60 md:text-sm">{item.date.slice(0, 10)}</div>
+          </div>
+        {/each}
+      </div>
+    {:else}
+      <div class="p-8 text-center">
+        <p class="text-sm text-on-surface-variant/80">No data available yet</p>
+      </div>
+    {/if}
+  </div>
 </div>

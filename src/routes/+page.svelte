@@ -178,23 +178,24 @@ onMount(() => {
 <div role="button" tabindex="-1" onkeyup={() => {}}  onclick={save} class="fixed bg-transparent z-0 inset-0 h-full w-full"></div>
 
 <div class="flex h-full p-2 md:p-5 flex-col">
-  <header class="flex justify-between items-center bg-surface-container/60 rounded-full p-3">
-    <CircularProgress size="35" className="text-sm font-medium text-on-surface" stroke="6" value={data.exp} max={reqXp} ><span>{data.level}</span></CircularProgress>
+  <header class="flex justify-between lg:w-[80%] lg:mx-auto items-center bg-surface-container/60 rounded-full p-3">
+    <CircularProgress size="32" className="text-sm font-medium text-on-surface" stroke="6" value={data.exp} max={reqXp} ><span>{data.level}</span></CircularProgress>
     <p class="p-1 shadow-md transition-all hover:rounded-2xl px-3 text-sm rounded-full text-on-surface bg-surface-container-high">{tag()}</p>
     <p class="px-3 p-1 text-secondary font-light ">{data.coins}</p>
   </header>
 
   <div class="flex flex-1 items-center mt-8 md:m-auto md:justify-center flex-col">
+
 <input 
   type="text" 
   placeholder="name" 
-      bind:value={data.nam}
-  class="text-center m-2 text-[3rem] md:text-[5rem] font-bold z-2 max-w-[60vw] 
+  bind:value={data.nam}
+  class="text-center m-2 font-semibold z-2 w-full text-9xl md:text-[min(16vw,9rem)]
          {textColor()}
-         placeholder:opacity-50"
+         placeholder:opacity-30"
   style="{textColor()} caret-color: currentColor;"
 >
 
-    <CircularProgress className="text-3xl {textColor()} mt-16" max={data.dailyGoal} value={data.dailyCount} ><span class="{textColor()}">{data.dailyCount}</span></CircularProgress>
+    <CircularProgress size="170" className="text-3xl {textColor()} mt-16" max={data.dailyGoal} value={data.dailyCount} ><span class="{textColor()}">{data.dailyCount}</span></CircularProgress>
   </div>
 </div>

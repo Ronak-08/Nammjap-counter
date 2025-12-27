@@ -48,8 +48,8 @@ function handleColor(item) {
 <Toast time="2000" show={toast.show} content={toast.msg} />
 
 <div class="min-h-full bg-surface p-4 md:p-6">
-  <header class="sticky top-2 z-10 mb-6 flex items-center justify-between rounded-full bg-surface-container/80 px-6 py-3 backdrop-blur-md shadow-sm">
-    <h1 class="text-2xl font-normal text-on-surface">Store</h1>
+  <header class="sticky top-2 z-10 mb-6 flex items-center justify-between rounded-full bg-surface-container/80 px-5 py-3 backdrop-blur-md shadow-sm">
+    <h1 class="text-2xl font-black text-on-surface">Store</h1>
     <div class="flex items-center gap-2 rounded-full bg-secondary-container px-3 py-1.5 text-on-secondary-container">
       <span class="text-sm font-bold">{data.coins}</span>
     </div>
@@ -57,7 +57,7 @@ function handleColor(item) {
 
   <section class="p-2">
     <h2 class="mb-6 px-2 text-sm font-medium text-on-surface-variant opacity-80">Styles</h2>
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 p-2 sm:grid-cols-3 md:p-3 md:grid-cols-4">
       {#each colors as c}
         {@const unlocked = data.unlockedColors.includes(c.class)}
         {@const active = data.setColor === c.class}
