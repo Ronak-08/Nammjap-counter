@@ -6,7 +6,7 @@ import { data, restore, saveData } from '$lib/state.svelte.js';
 import Modal from '$lib/components/Modal.svelte';
 import Button from '$lib/components/Button.svelte';
 import CircularProgress from '$lib/components/CircularProgress.svelte';
-	import Toast from '$lib/components/Toast.svelte';
+import Toast from '$lib/components/Toast.svelte';
 
 const getToday = () => new Date().toDateString();
 let showToast = $state(false);
@@ -26,7 +26,6 @@ async function triggerToast(msg) {
 
 function save() {
   if (!browser) return;
-  checkAndResetDay(); 
   data.count++;
   data.dailyCount++;
   data.exp++;
@@ -67,14 +66,14 @@ function levelUp() {
   }
 }
 
-  function checkGoalToast() {
-    const today = getToday();
-    const lastShown = localStorage.getItem("goalShown");
-    if (data.dailyCount >= data.dailyGoal && lastShown !== today) {
-      localStorage.setItem("goalShown", today);
-      triggerToast("Goal Completed! 🎉");
-    }
+function checkGoalToast() {
+  const today = getToday();
+  const lastShown = localStorage.getItem("goalShown");
+  if (data.dailyCount >= data.dailyGoal && lastShown !== today) {
+    localStorage.setItem("goalShown", today);
+    triggerToast("Goal Completed! 🎉");
   }
+}
 
 function textColor() {
   if (!browser) return "text-on-surface";
@@ -94,7 +93,6 @@ function tag() {
 }
 
 function finalizeYesterday(day, count) {
-  if (!day) return;
   try {
     const d = JSON.parse(localStorage.getItem("daily") ?? "{}");
     d[day] = {
@@ -102,7 +100,7 @@ function finalizeYesterday(day, count) {
       count: count,
       timestamp: new Date(day).getTime()
     };
-    
+
     localStorage.setItem("daily", JSON.stringify(d));
   } catch (e) {
     console.error("Failed to save history", e);
@@ -110,24 +108,28 @@ function finalizeYesterday(day, count) {
 }
 
 function checkAndResetDay() {
-  if (!browser) return;
-  const today = getToday();
-  const savedDay = localStorage.getItem("day");
-  
-  if (savedDay && savedDay !== today) {
-    const yesterday = new Date(new Date(today).getTime() - 86400000).toDateString();
-    
-    if (savedDay === yesterday && data.dailyCount >= data.dailyGoal) {
+  if(!browser) return;
+
+  let now = new Date();
+  let todayStr = now.toDateString();
+  let savedDay = localStorage.getItem("day");
+  let yesterday = new Date();
+  yesterday.setDate(now.getDate() - 1);
+  const yesterdayStr = yesterday.toDateString();
+
+  if(savedDay && savedDay !== todayStr) {
+    if(savedDay === yesterdayStr) {
       data.streak++;
-      if (data.streak > data.longestStreak) data.longestStreak = data.streak;
-      triggerToast(`🔥 ${data.streak} day streak!`);
+      if(data.streak > data.longestStreak) data.longestStreak = data.streak;
+      triggerToast(`${data.streak} day streak!`);
     } else {
       data.streak = 0;
     }
-    finalizeYesterday(savedDay, data.dailyCount);
-    data.dailyCount = 0;
-    localStorage.setItem("day", today);
+    finalizeYesterday(savedDay, data.count);
+    localStorage.setItem("day", todayStr);
     saveData();
+  } else if(!savedDay) {
+    localStorage.setItem("day", todayStr);
   }
 }
 
@@ -139,38 +141,37 @@ onMount(() => {
     show = true;
     localStorage.setItem('modalShown', true);
   }
-  checkAndResetDay();
 });
 
 
 
-	function handleSave() {
-		const val = data.dailyGoal;
-		if (!val || val < 108 || val > 1_000_000) return;
-		saveData();
-		show = false;
-	}
+function handleSave() {
+  const val = data.dailyGoal;
+  if (!val || val < 108 || val > 1_000_000) return;
+  saveData();
+  show = false;
+}
 </script>
 
 <Modal {show}>
-	<div class="flex flex-col gap-3 p-1">
-		<h2 class="text-2xl font-normal mb-3 text-on-surface">Daily Goal</h2>
-		
-			<input 
-				type="number" 
-				bind:value={data.dailyGoal}
-				min="108" 
-				max="1000000"
-				required
-				class="peer w-full rounded-xl bg-surface-container-highest px-3 py-2.5 text-lg text-on-surface outline-none ring-2 ring-transparent transition-all focus:ring-primary invalid:ring-error invalid:text-error"
-				placeholder="Target Amount"
-			>
+  <div class="flex flex-col gap-3 p-1">
+    <h2 class="text-2xl font-normal mb-3 text-on-surface">Daily Goal</h2>
 
-		<div class="flex w-full mt-4 justify-end gap-2">
-			<Button class="px-4" variant="text" onclick={() => show = false}>Cancel</Button>
-			<Button class="px-4" onclick={handleSave}>Set</Button>
-		</div>
-	</div>
+    <input 
+      type="number" 
+      bind:value={data.dailyGoal}
+      min="108" 
+      max="1000000"
+      required
+      class="peer w-full rounded-xl bg-surface-container-highest px-3 py-2.5 text-lg text-on-surface outline-none ring-2 ring-transparent transition-all focus:ring-primary invalid:ring-error invalid:text-error"
+      placeholder="Target Amount"
+    >
+
+    <div class="flex w-full mt-4 justify-end gap-2">
+      <Button class="px-4" variant="text" onclick={() => show = false}>Cancel</Button>
+      <Button class="px-4" onclick={handleSave}>Set</Button>
+    </div>
+  </div>
 </Modal>
 
 <Toast time="2000" show={showToast} content={content} />
@@ -186,16 +187,15 @@ onMount(() => {
 
   <div class="flex flex-1 items-center mt-8 md:m-auto md:justify-center flex-col">
 
-<input 
-  type="text" 
-  placeholder="name" 
-  bind:value={data.nam}
-  class="text-center m-2 font-semibold z-2 w-full text-9xl md:text-[min(16vw,9rem)]
-         {textColor()}
-         placeholder:opacity-30"
-  style="{textColor()} caret-color: currentColor;"
->
+    <input 
+      type="text" 
+      bind:value={data.nam}
+      onchange={saveData}
+      class="text-center m-2 font-semibold z-2 w-full text-9xl md:text-[min(16vw,9rem)]
+      {textColor()}"
+      style="{textColor()} caret-color: currentColor;"
+    >
 
-    <CircularProgress size="170" className="text-3xl {textColor()} mt-16" max={data.dailyGoal} value={data.dailyCount} ><span class="{textColor()}">{data.dailyCount}</span></CircularProgress>
+    <CircularProgress size="160" className="text-3xl {textColor()} mt-14" max={data.dailyGoal} value={data.dailyCount} ><span class="{textColor()}">{data.dailyCount}</span></CircularProgress>
   </div>
 </div>

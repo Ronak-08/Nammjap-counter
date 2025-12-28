@@ -67,7 +67,7 @@ function handleColor(item) {
           disabled={!unlocked && data.coins < c.cost}
           class="group relative flex flex-col gap-3 overflow-hidden rounded-[20px] bg-surface-container-low p-4 text-left transition-all duration-300 hover:rounded-[28px] hover:bg-surface-container-high active:scale-95 disabled:opacity-50 {active ? 'ring-2 ring-primary ring-offset-surface' : ''}"
         >
-          <div class="rounded-2xl py-2 text-4xl font-bold transition-transform group-hover:scale-110 {c.class}">
+          <div class="rounded-2xl py-2 text-4xl font-bold {c.class}">
             Aa
           </div>
 
