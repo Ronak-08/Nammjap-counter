@@ -3,6 +3,7 @@ import CircularProgress from "$lib/components/CircularProgress.svelte";
 import Divider from "$lib/components/Divider.svelte";
 import { data } from "$lib/state.svelte";
 import { browser } from "$app/environment";
+	import Ripple from "$lib/components/Ripple.svelte";
 let reqXp = $derived(10 * data.level ** 2);
 const daily = browser && JSON.parse(localStorage.getItem("daily") ?? "{}");
 const history = Object.values(daily).sort((a, b) => b.timestamp - a.timestamp);
@@ -42,7 +43,7 @@ function compare() {
 
     <div class="rounded-[28px] bg-primary p-4 text-on-primary transition hover:opacity-90 md:aspect-auto md:h-full md:p-6">
       <p class="text-sm font-semibold mb-6 md:text-base">Total</p>
-      <span class="text-5xl mx-1 font-black">{data.count}</span>
+      <span class="text-5xl mx-1 font-bold py-2">{data.count}</span>
       <div class="hidden md:block"></div>
     </div>
 
@@ -61,11 +62,12 @@ function compare() {
         <span class="text-2xl font-light opacity-80 md:text-3xl">/{data.dailyGoal}</span>
       </div>
       {#if data.streak > 0}
-        <p class="mt-1 text-center text-sm font-normal md:text-base">{data.streak} streak!</p>
+        <p class="mt-1 text-center text-xs font-normal opacity-80">{data.streak} streak!</p>
       {/if}
     </div>
 
     <div class="col-span-2 flex items-center gap-6 rounded-[28px] bg-surface-container-high p-4 shadow-sm transition hover:bg-surface-container-highest md:col-span-1 md:flex-col md:items-start md:justify-between md:p-5">
+            <Ripple />
       <CircularProgress size="65" stroke="8" value={data.exp} max={reqXp} className="text-xl font-semibold">
         {data.level}
       </CircularProgress>
@@ -81,8 +83,9 @@ function compare() {
     {#if history && Object.keys(history).length > 0}
       <div class="grid p-3 max-h-96 grid-cols-2 gap-3 overflow-y-auto bg-surface-container rounded-3xl sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
         {#each Object.values(history) as item}
-          <div class="flex flex-col justify-center rounded-2xl border shadow border-outline/10 bg-surface-container-high p-4 transition hover:bg-surface-container-highest">
-            <div class="text-2xl font-bold md:text-3xl">{item.count}</div>
+          <div class="flex flex-col justify-center rounded-2xl hover:rounded-lg border shadow border-outline/10 bg-surface-container-high p-4 transition hover:bg-surface-container-highest">
+            <Ripple />
+            <div class="text-2xl font-bold opacity-90 md:text-3xl">{item.count}</div>
             <div class="mt-1 text-xs opacity-60 md:text-sm">{item.date.slice(0, 10)}</div>
           </div>
         {/each}

@@ -53,7 +53,7 @@ function isActive(href) {
         </div>
 
         <span class="
-          text-[11px] font-medium truncate max-w-full px-1
+          text-[10px] font-medium truncate max-w-full px-1
           transition-colors duration-200
           {active ? 'text-on-surface font-semibold' : 'text-on-surface-variant'}
           ">

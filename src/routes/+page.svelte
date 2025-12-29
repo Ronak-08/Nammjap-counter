@@ -126,6 +126,7 @@ function checkAndResetDay() {
       data.streak = 0;
     }
     finalizeYesterday(savedDay, data.count);
+    data.dailyCount = 0;
     localStorage.setItem("day", todayStr);
     saveData();
   } else if(!savedDay) {

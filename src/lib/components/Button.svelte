@@ -1,4 +1,5 @@
 <script>
+import Ripple from "./Ripple.svelte";
 let { children, variant = "filled", class: className, ...rest} = $props();
 
 const styles = {
@@ -16,5 +17,6 @@ let variantClass = $derived(styles[variant] || styles.filled);
   class="p-2 rounded-full select-none active:rounded-xl font-medium transition active:brightness-90 flex items-center justify-center gap-2 {variantClass} {className}"
   {...rest}
 >
+  <Ripple />
   {@render children?.()}
 </button>

@@ -65,7 +65,7 @@ function handleColor(item) {
         <button
           onclick={() => handleColor(c)}
           disabled={!unlocked && data.coins < c.cost}
-          class="group relative flex flex-col gap-3 overflow-hidden rounded-[20px] bg-surface-container-low p-4 text-left transition-all duration-300 hover:rounded-[28px] hover:bg-surface-container-high active:scale-95 disabled:opacity-50 {active ? 'ring-2 ring-primary ring-offset-surface' : ''}"
+          class="group relative flex flex-col gap-3 overflow-hidden rounded-3xl bg-surface-container-low p-4 text-left transition-all duration-300 hover:rounded-xl hover:bg-surface-container-high active:scale-[0.98] disabled:opacity-50 {active ? 'ring-2 ring-primary ring-offset-surface' : ''}"
         >
           <div class="rounded-2xl py-2 text-4xl font-bold {c.class}">
             Aa
