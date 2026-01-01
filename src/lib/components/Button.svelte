@@ -14,7 +14,7 @@ let variantClass = $derived(styles[variant] || styles.filled);
 </script>
 
 <button 
-  class="p-2 rounded-full select-none active:rounded-xl font-medium transition active:brightness-90 flex items-center justify-center gap-2 {variantClass} {className}"
+  class="p-2 rounded-full select-none active:rounded-xl transition active:brightness-90 flex items-center justify-center gap-2 {variantClass} {className}"
   {...rest}
 >
   <Ripple />
